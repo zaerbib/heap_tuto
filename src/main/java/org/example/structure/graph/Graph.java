@@ -5,8 +5,8 @@ import lombok.Setter;
 import org.example.structure.graph.model.Vertex;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -14,7 +14,7 @@ public class Graph<T> {
     private Map<Vertex<T>, List<Vertex<T>>> graph;
 
     public Graph() {
-        this.graph = new HashMap<>();
+        this.graph = new ConcurrentHashMap<>();
     }
 
     public void addVertex(T add) {
@@ -22,21 +22,21 @@ public class Graph<T> {
     }
 
     public void removeVertex(T remove) {
-        Vertex<T> vertex = new Vertex<T>(remove);
+        Vertex<T> vertex = new Vertex<>(remove);
         graph.values().forEach(item -> item.remove(vertex));
-        graph.remove(new Vertex<>(remove));
+        graph.remove(vertex, graph.get(vertex));
     }
 
     public void addEdgeDirect(T first, T second) {
-        Vertex<T> firstVertex = new Vertex<T>(first);
-        Vertex<T> secondVertex = new Vertex<T>(second);
+        Vertex<T> firstVertex = new Vertex<>(first);
+        Vertex<T> secondVertex = new Vertex<>(second);
 
         graph.get(firstVertex).add(secondVertex);
     }
 
     public void addEdgeUnDirect(T first, T second) {
-        Vertex<T> firstVertex = new Vertex<T>(first);
-        Vertex<T> secondVertex = new Vertex<T>(second);
+        Vertex<T> firstVertex = new Vertex<>(first);
+        Vertex<T> secondVertex = new Vertex<>(second);
 
         graph.get(firstVertex).add(secondVertex);
         graph.get(secondVertex).add(firstVertex);
@@ -64,6 +64,7 @@ public class Graph<T> {
 
     public static <T> Graph<T> generateGraph(int nbVerticles,
                                              int nbEdges,
+                                             boolean direct,
                                              Supplier<T> generate) {
         Graph<T> tGraph = new Graph<>();
         Random rand = new Random();
@@ -76,11 +77,17 @@ public class Graph<T> {
         List<Vertex<T>> listKeys = tGraph.getGraph().keySet().stream().toList();
         while(nbEdges > 0) {
             int source = rand.nextInt(nbVerticles);
-            int destination = rand.nextInt(nbEdges);
+            int destination = rand.nextInt(nbVerticles);
             if(source != destination) {
                 String edge = source + " " + destination;
                if(!edges.contains(edge)) {
-                   tGraph.addEdgeDirect(listKeys.get(source).getT(), listKeys.get(destination).getT());
+                   if(direct) {
+                       tGraph.addEdgeDirect(listKeys.get(source).getT(),
+                               listKeys.get(destination).getT());
+                   } else {
+                       tGraph.addEdgeUnDirect(listKeys.get(source).getT(),
+                               listKeys.get(destination).getT());
+                   }
                    edges.add(edge);
                    nbEdges--;
                }
