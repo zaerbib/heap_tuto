@@ -96,4 +96,39 @@ public class Graph<T> {
 
         return tGraph;
     }
+
+    public static <T> Graph<T> generateGraphFromList(List<T> list, boolean direct) {
+        Graph<T> graph = new Graph<>();
+        Random rand = new Random();
+        int nbVerticles = list.size();
+        int nbEdges = 4 * list.size();
+
+        for (T t : list) {
+            graph.addVertex(t);
+        }
+
+        Set<String> edges = new HashSet<>();
+
+        while(nbEdges > 0) {
+            int source = rand.nextInt(nbVerticles);
+            int destination = rand.nextInt(nbVerticles);
+            if(source != destination) {
+                String edge = source + " " + destination;
+                if(!edges.contains(edge)) {
+                    if(direct) {
+                        graph.addEdgeDirect(list.get(source),
+                                list.get(destination));
+                    } else {
+                        graph.addEdgeUnDirect(list.get(source),
+                                list.get(destination));
+                    }
+                    edges.add(edge);
+                    nbEdges--;
+                }
+            }
+        }
+
+        return graph;
+    }
+
 }
