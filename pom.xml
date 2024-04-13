@@ -12,6 +12,8 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>5.10.2</junit.version>
+        <hamcrest.version>2.2</hamcrest.version>
     </properties>
 
     <dependencies>
@@ -32,6 +34,19 @@
             <artifactId>lombok</artifactId>
             <version>1.18.32</version>
             <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest</artifactId>
+            <version>${hamcrest.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
